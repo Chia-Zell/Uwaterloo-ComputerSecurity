@@ -15,7 +15,7 @@ int main(void)
   char *env[1];
 
   // one way to invoke pwgen, system() creates a separate process
-  char[] buf = 'x00' * 1000;
+  char *buf = 'x00' * 1000 +'\0';
   system("/usr/local/bin/pwgen -v");
 
 
