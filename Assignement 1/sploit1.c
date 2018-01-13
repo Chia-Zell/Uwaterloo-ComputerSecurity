@@ -7,7 +7,7 @@
 #include <unistd.h>
 //#include "/usr/local/src/shellcode.h"
 
-#define TARGET "/usr/local/bin/pwgen"
+//#define TARGET "/usr/local/bin/pwgen"
 
 int main(void)
 {
@@ -16,7 +16,8 @@ int main(void)
 
   // one way to invoke pwgen, system() creates a separate process
   char *buf = 'x00' * 1000 +'\0';
-  system("/usr/local/bin/pwgen -v" + buf);
+  //system( + &buf);
+  char[] full = "/usr/local/bin/pwgen -v " + &buf;
 
 
 
