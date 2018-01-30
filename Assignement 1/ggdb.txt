@@ -3,3 +3,6 @@ run
 symbol-file /usr/local/bin/pwgen
 break main
 cont
+b print_usage
+
+
